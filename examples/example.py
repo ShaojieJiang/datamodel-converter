@@ -14,18 +14,19 @@ class Address(BaseModel):
     zip: str
 
 
-class Person(BaseModel):
+class Person(BaseModel, use_attribute_docstrings=True):
     """Person model."""
 
     name: str
     age: int
     addresses: list[Address]
+    """Person might have multiple addresses."""
 
 
-print("Vanilla Pydantic schema:")
+print("Pydantic schema:")
 print(json.dumps(Person.model_json_schema(), indent=2))
 print()
 
 print("Pydantic converter:")
-print(json.dumps(pydantic_converter(Person), indent=2))
+print(json.dumps(pydantic_converter(Person, flavor="openai_output_schema"), indent=2))
 print()
