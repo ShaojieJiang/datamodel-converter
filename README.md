@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ShaojieJiang/datamodel-converter/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/ShaojieJiang/datamodel-converter/actions/workflows/ci.yml?query=branch%3Amain)
 [![Coverage](https://coverage-badge.samuelcolvin.workers.dev/ShaojieJiang/datamodel-converter.svg)](https://coverage-badge.samuelcolvin.workers.dev/redirect/ShaojieJiang/datamodel-converter)
-<!-- [![PyPI](https://img.shields.io/pypi/v/pydantic-ai.svg)](https://pypi.python.org/pypi/pydantic-ai) -->
+[![PyPI](https://img.shields.io/pypi/v/datamodel-converter.svg)](https://pypi.python.org/pypi/datamodel-converter)
 
 Every time I need to specify output schema for LLMs, I need to write a converter from Pydantic models to the schema.
 Pydantic V2's `model_json_schema` is not supported by some platforms like OpenAI or n8n.
