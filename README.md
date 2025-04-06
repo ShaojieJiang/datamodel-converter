@@ -1,93 +1,170 @@
-# UV Template
+# Datamodel Converter
 
-[![CI](https://github.com/AI-Colleagues/uv-template/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/AI-Colleagues/uv-template/actions/workflows/ci.yml?query=branch%3Amain)
-[![Coverage](https://coverage-badge.samuelcolvin.workers.dev/AI-Colleagues/uv-template.svg)](https://coverage-badge.samuelcolvin.workers.dev/redirect/AI-Colleagues/uv-template)
-<!-- [![PyPI](https://img.shields.io/pypi/v/pydantic-ai.svg)](https://pypi.python.org/pypi/pydantic-ai) -->
+[![CI](https://github.com/ShaojieJiang/datamodel-converter/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/ShaojieJiang/datamodel-converter/actions/workflows/ci.yml?query=branch%3Amain)
+[![Coverage](https://coverage-badge.samuelcolvin.workers.dev/ShaojieJiang/datamodel-converter.svg)](https://coverage-badge.samuelcolvin.workers.dev/redirect/ShaojieJiang/datamodel-converter)
+[![PyPI](https://img.shields.io/pypi/v/datamodel-converter.svg)](https://pypi.python.org/pypi/datamodel-converter)
 
-A modern Python project template with UV package management, pre-commit hooks for code quality, and documentation support via MkDocs.
-
-## Features
-
-- 📦 UV for package and project management
-- 🔍 Pre-commit hooks for code quality
-- 📚 Documentation setup with MkDocs Material theme
-- 🛠️ Makefile for common development tasks
-- ✨ Code quality tools:
-  - Black-compatible formatting (via Ruff)
-  - Import sorting (via Ruff)
-  - Type checking with mypy
-  - Comprehensive linting with Ruff
-- 📊 Testing setup with pytest and coverage reporting
+Every time I need to specify output schema for LLMs, I need to write a converter from Pydantic models to the schema.
+Pydantic V2's `model_json_schema` is not supported by some platforms like OpenAI or n8n.
+This package provides a converter for this purpose.
 
 ## Installation
 
 ```bash
-# Install dependencies
-uv sync
+pip install datamodel-converter
 ```
 
-## Development
+## Example
 
-This template includes several tools to ensure code quality and maintainability:
+```python
+import json
+from pydantic import BaseModel
+from datamodel_converter.pydantic_converter import pydantic_converter
 
-- **UV**: Modern package and project management for Python 3.12+
-- **Pre-commit hooks**: Automated code quality checks
-- **MkDocs**: Documentation generation with Material theme and Python API docs support
-- **Ruff**: All-in-one Python linter and formatter with:
-  - Code style enforcement (PEP 8)
-  - Import sorting
-  - Complexity checking (McCabe)
-  - Docstring validation (Google style)
-  - And many more checks
-- **mypy**: Static type checking with strict settings
-- **Github Actions**:
-  - Release workflow on push tags
 
-### Code Quality Tools
+class Address(BaseModel):
+    """Address model."""
 
-The template comes with pre-configured linting and formatting tools that run automatically on commit:
+    street: str
+    city: str
+    state: str
+    zip: str
 
-- **Ruff Format**: Formats your code consistently (Black-compatible)
-- **Ruff Lint**: Comprehensive linting with multiple rule sets enabled:
-  - Code style (pycodestyle)
-  - Bugs and complexity (pyflakes, flake8-bugbear)
-  - Naming conventions (PEP 8)
-  - Import organization
-  - And more
-- **mypy**: Strict type checking with `disallow_untyped_defs=true`
 
-To manually run the tools:
-```bash
-# Check code quality (ruff, mypy, and format check)
-make lint
+class Person(BaseModel, use_attribute_docstrings=True):
+    """Person model."""
 
-# Format code
-make format
+    name: str
+    age: int
+    addresses: list[Address]
+    """Person might have multiple addresses."""
 
-# Run tests with coverage report
-make test
 
-# Serve documentation locally
-make doc
+print("Pydantic schema:")
+print(json.dumps(Person.model_json_schema(), indent=2))
+print()
+
+print("OpenAI output schema:")
+print(json.dumps(pydantic_converter(Person, flavor="openai_output_schema"), indent=2))
+print()
+```
+Output:
+```json
+Pydantic schema:
+{
+  "$defs": {
+    "Address": {
+      "description": "Address model.",
+      "properties": {
+        "street": {
+          "title": "Street",
+          "type": "string"
+        },
+        "city": {
+          "title": "City",
+          "type": "string"
+        },
+        "state": {
+          "title": "State",
+          "type": "string"
+        },
+        "zip": {
+          "title": "Zip",
+          "type": "string"
+        }
+      },
+      "required": [
+        "street",
+        "city",
+        "state",
+        "zip"
+      ],
+      "title": "Address",
+      "type": "object"
+    }
+  },
+  "description": "Person model.",
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "age": {
+      "title": "Age",
+      "type": "integer"
+    },
+    "addresses": {
+      "description": "Person might have multiple addresses.",
+      "items": {
+        "$ref": "#/$defs/Address"
+      },
+      "title": "Addresses",
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "age",
+    "addresses"
+  ],
+  "title": "Person",
+  "type": "object"
+}
+
+OpenAI output schema:
+{
+  "description": "Person model.",
+  "name": "Person",
+  "strict": true,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "age": {
+        "type": "integer"
+      },
+      "addresses": {
+        "description": "Person might have multiple addresses.",
+        "items": {
+          "description": "Address model.",
+          "properties": {
+            "street": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string"
+            },
+            "zip": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "street",
+            "city",
+            "state",
+            "zip"
+          ],
+          "type": "object",
+          "additionalProperties": false
+        },
+        "type": "array"
+      }
+    },
+    "additionalProperties": false,
+    "required": [
+      "name",
+      "age",
+      "addresses"
+    ]
+  }
+}
 ```
 
-You can also run individual tools directly with UV:
-```bash
-# Format and lint code
-ruff check .
-ruff format .
+## Related works
 
-# Type checking
-mypy .
-
-# Run tests with coverage
-pytest --cov --cov-report term-missing tests/
-```
-
-## Usage
-
-1. Clone this template
-2. Update the project details in `pyproject.toml`
-3. Start developing with the included tools
-
-For more detailed information, check the documentation.
+- [datamodel-code-generator](https://github.com/koxudaxi/datamodel-code-generator/): Generate Pydantic models from JSON Schema (opposite direction of this package).
