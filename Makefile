@@ -1,6 +1,6 @@
 lint:
 	ruff check .
-	mypy uv_template
+	mypy datamodel_converter
 	ruff format . --check
 
 format:

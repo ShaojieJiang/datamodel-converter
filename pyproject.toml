@@ -27,7 +27,7 @@ docs = [
 [project]
 dependencies = []
 description = "Add your description here"
-name = "uv-template"
+name = "datamodel-converter"
 readme = "README.md"
 requires-python = ">=3.12"
 version = "0.0.1"
@@ -43,7 +43,7 @@ exclude_lines = [
 [tool.coverage.run]
 branch = true
 command_line = "-m pytest"
-source = ["uv_template"]
+source = ["datamodel_converter"]
 
 [tool.mypy]
 disallow_untyped_defs = true
@@ -85,7 +85,7 @@ select = [
 
 [tool.ruff.lint.isort]
 force-single-line = true
-known-first-party = ["uv_template"]
+known-first-party = ["datamodel_converter"]
 lines-after-imports = 2
 no-lines-before = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 
