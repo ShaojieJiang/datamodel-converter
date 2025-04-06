@@ -25,7 +25,9 @@ docs = [
 ]
 
 [project]
-dependencies = []
+dependencies = [
+    "pydantic>=2.11.2",
+]
 description = "Add your description here"
 name = "datamodel-converter"
 readme = "README.md"
@@ -84,7 +86,6 @@ select = [
 ]
 
 [tool.ruff.lint.isort]
-force-single-line = true
 known-first-party = ["datamodel_converter"]
 lines-after-imports = 2
 no-lines-before = ["future", "standard-library", "third-party", "first-party", "local-folder"]
