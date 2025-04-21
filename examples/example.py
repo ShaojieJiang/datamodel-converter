@@ -2,7 +2,7 @@
 
 import json
 from pydantic import BaseModel
-from datamodel_converter.pydantic_converter import pydantic_converter
+from datamodel_converter import pydantic_converter
 
 
 class Address(BaseModel):
