@@ -28,11 +28,13 @@ docs = [
 dependencies = [
     "pydantic>=2.11.2",
 ]
-description = "Add your description here"
+description = "Convert Pydantic models to OpenAI output schema, OpenAI tool schema, and more."
+license = {file = "LICENSE"}
 name = "datamodel-converter"
 readme = "README.md"
 requires-python = ">=3.12"
 version = "0.0.1"
+url = "https://github.com/ShaojieJiang/datamodel-converter"
 
 [tool.coverage.report]
 exclude_lines = [
